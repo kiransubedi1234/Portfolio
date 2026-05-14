@@ -12,6 +12,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Ensure all config values are present during initialization
+if (!firebaseConfig.apiKey) {
+  console.warn("Firebase API Key is missing. Check your .env.local file.");
+}
+
 // Initialize Firebase (avoid re-initializing on hot-reload)
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
