@@ -1,0 +1,46 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper to check if user is admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'subedikiran105@gmail.com';
+    }
+
+    // Projects: Public can read visible ones, admin can do everything
+    match /projects/{id} {
+      allow read: if isAdmin() || (resource != null && resource.data.visible == true) || (resource == null); 
+      allow write: if isAdmin();
+    }
+
+    // Blog Posts: Public can read published ones, admin can do everything
+    match /posts/{id} {
+      allow read: if isAdmin() || (resource != null && resource.data.published == true) || (resource == null);
+      allow write: if isAdmin();
+    }
+
+    // Messages: Public can create, admin can manage
+    match /messages/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Skills: Public can read, admin can manage
+    match /skills/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Certifications: Public can read, admin can manage
+    match /certifications/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Profile settings: Public can read, admin can write
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
